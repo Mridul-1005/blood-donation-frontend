@@ -1,13 +1,13 @@
 # Blood Donation Monorepo
 
-This repository now contains both applications under [blood-donation](blood-donation):
+This repository now contains both applications at the root level:
 
-* [blood-donation/frontend](blood-donation/frontend) - Angular frontend
-* [blood-donation/backend](blood-donation/backend) - Spring Boot backend
+* [frontend](frontend) - Angular frontend
+* [backend](backend) - Spring Boot backend
 
 ## Frontend
 
-Run the frontend from [blood-donation/frontend](blood-donation/frontend):
+Run the frontend from [frontend](frontend):
 
 ```bash
 npm install
@@ -16,7 +16,7 @@ npm start
 
 ## Backend
 
-Run the backend from [blood-donation/backend](blood-donation/backend):
+Run the backend from [backend](backend):
 
 ```bash
 ./mvnw test
@@ -25,4 +25,4 @@ Run the backend from [blood-donation/backend](blood-donation/backend):
 
 ## Structure
 
-The repo is organized as a simple monorepo so the frontend and backend stay side by side under one root folder.
+The repo is organized as a simple monorepo so the frontend and backend stay side by side at the repository root.
