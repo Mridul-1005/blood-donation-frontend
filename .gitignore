@@ -5,9 +5,14 @@
 /tmp
 /out-tsc
 /bazel-out
+/blood-donation/frontend/dist
+/blood-donation/frontend/tmp
+/blood-donation/frontend/out-tsc
+/blood-donation/frontend/bazel-out
 
 # Node
 /node_modules
+/blood-donation/frontend/node_modules
 npm-debug.log
 yarn-error.log
 
@@ -30,6 +35,7 @@ yarn-error.log
 
 # Miscellaneous
 /.angular/cache
+/blood-donation/frontend/.angular/cache
 .sass-cache/
 /connect.lock
 /coverage
@@ -37,8 +43,8 @@ yarn-error.log
 testem.log
 /typings
 __screenshots__/
-/backend/target/
-/backend/.idea/
+/blood-donation/backend/target/
+/blood-donation/backend/.idea/
 
 # System files
 .DS_Store

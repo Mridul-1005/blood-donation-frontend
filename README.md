@@ -1,59 +1,28 @@
-# BloodDonationFrontend
+# Blood Donation Monorepo
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.3.
+This repository now contains both applications under [blood-donation](blood-donation):
 
-## Development server
+* [blood-donation/frontend](blood-donation/frontend) - Angular frontend
+* [blood-donation/backend](blood-donation/backend) - Spring Boot backend
 
-To start a local development server, run:
+## Frontend
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Run the frontend from [blood-donation/frontend](blood-donation/frontend):
 
 ```bash
-ng generate component component-name
+npm install
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Backend
+
+Run the backend from [blood-donation/backend](blood-donation/backend):
 
 ```bash
-ng generate --help
+./mvnw test
+./mvnw spring-boot:run
 ```
 
-## Building
+## Structure
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+The repo is organized as a simple monorepo so the frontend and backend stay side by side under one root folder.
