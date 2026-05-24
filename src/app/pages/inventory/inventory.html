@@ -1,0 +1,116 @@
+<!-- pages/inventory/inventory.component.html -->
+<div class="page-container">
+
+  <div class="page-header">
+    <div class="header-text">
+      <h1>Blood Inventory</h1>
+      <p>Current blood stock levels across all blood groups</p>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <div class="summary-row">
+      <mat-card class="summary-card">
+        <div class="summary-icon-wrapper info">
+          <mat-icon>water_drop</mat-icon>
+        </div>
+        <div class="summary-value">{{ getTotalUnits() }}</div>
+        <div class="summary-label">Total Units Available</div>
+      </mat-card>
+      <mat-card class="summary-card">
+        <div class="summary-icon-wrapper warning">
+          <mat-icon>group</mat-icon>
+        </div>
+        <div class="summary-value">{{ inventory.length }}</div>
+        <div class="summary-label">Blood Groups Tracked</div>
+      </mat-card>
+      <mat-card class="summary-card" [class.alert-card]="getCriticalCount() > 0">
+        <div class="summary-icon-wrapper" [class.danger]="getCriticalCount() > 0" [class.success]="getCriticalCount() === 0">
+          <mat-icon>{{ getCriticalCount() > 0 ? 'warning' : 'check_circle' }}</mat-icon>
+        </div>
+        <div class="summary-value">{{ getCriticalCount() }}</div>
+        <div class="summary-label">Groups Low / Out of Stock</div>
+      </mat-card>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="isLoading">
+    <div class="loading-center"><mat-spinner diameter="48"></mat-spinner></div>
+  </ng-container>
+
+  <ng-container *ngIf="!isLoading">
+    <div class="inventory-grid">
+      <ng-container *ngFor="let inv of inventory">
+        <mat-card class="inv-card" [class]="'level-' + getStockLevel(inv.units)">
+          <div class="inv-header" [style.background]="getColor(inv.bloodGroup)">
+            <span class="blood-label">{{ getBloodLabel(inv.bloodGroup) }}</span>
+          </div>
+          <div class="inv-body">
+            <div class="units-number">{{ inv.units }}</div>
+            <div class="units-text">units</div>
+            <span class="stock-badge" [class]="'badge-' + getStockLevel(inv.units)">{{ getStockLabel(inv.units) }}</span>
+            <div class="progress-bar">
+              <div class="progress-fill" [class]="'level-' + getStockLevel(inv.units)" [style.width.%]="Math.min(inv.units * 5, 100)"></div>
+            </div>
+            <div class="updated-at">Updated: {{ inv.updatedAt | date: 'dd MMM, HH:mm' }}</div>
+            <ng-container *ngIf="authService.isAdmin()">
+              <ng-container *ngIf="editingId === inv.id">
+                <div class="edit-section">
+                  <mat-form-field appearance="outline" class="units-input">
+                    <mat-label>New Units</mat-label>
+                    <input matInput type="number" [(ngModel)]="newUnits" min="0" max="999">
+                  </mat-form-field>
+                  <div class="edit-buttons">
+                    <button mat-raised-button color="primary" (click)="saveStock(inv.bloodGroup)">
+                      <mat-icon>save</mat-icon>
+                      <span>Save</span>
+                    </button>
+                    <button mat-stroked-button (click)="cancelEdit()">
+                      <span>Cancel</span>
+                    </button>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="editingId !== inv.id">
+                <button mat-stroked-button class="edit-btn" (click)="startEdit(inv)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Update Stock</span>
+                </button>
+              </ng-container>
+            </ng-container>
+          </div>
+        </mat-card>
+      </ng-container>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!isLoading">
+    <mat-card class="legend-card">
+      <mat-card-header>
+        <mat-card-title>Stock Level Guide</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="legend-row">
+          <span class="legend-dot dot-critical"></span>
+          <span><strong>Out of Stock</strong> — 0 units, urgent restocking needed</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="legend-row">
+          <span class="legend-dot dot-low"></span>
+          <span><strong>Low</strong> — 1 to 4 units, restock soon</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="legend-row">
+          <span class="legend-dot dot-medium"></span>
+          <span><strong>Moderate</strong> — 5 to 14 units, acceptable level</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="legend-row">
+          <span class="legend-dot dot-good"></span>
+          <span><strong>Good</strong> — 15+ units, well stocked</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </ng-container>
+
+</div>

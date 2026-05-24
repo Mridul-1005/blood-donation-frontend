@@ -1,0 +1,117 @@
+<!-- pages/blood-requests/request-list/request-list.component.html -->
+<div class="page-container">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-text">
+      <h1>Blood Requests</h1>
+      <p>Find and respond to urgent blood needs in your community</p>
+    </div>
+    <ng-container *ngIf="authService.isLoggedIn()">
+      <button mat-raised-button color="primary" routerLink="/requests/new">
+        <mat-icon>add</mat-icon>
+        <span>New Request</span>
+      </button>
+    </ng-container>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Filter by Blood Group</mat-label>
+      <mat-select [(ngModel)]="selectedBloodGroup" (ngModelChange)="onFilterChange()">
+        <mat-option value="">All Blood Groups</mat-option>
+        <mat-option *ngFor="let bg of bloodGroups" [value]="bg.value">{{ bg.label }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <ng-container *ngIf="selectedBloodGroup">
+      <button mat-stroked-button (click)="clearFilter()">
+        <mat-icon>clear</mat-icon>
+        <span>Clear Filter</span>
+      </button>
+    </ng-container>
+
+    <span class="results-count">{{ requests.length }} request(s) found</span>
+  </div>
+
+  <!-- Loading Spinner -->
+  <ng-container *ngIf="isLoading">
+    <div class="loading-center">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
+  </ng-container>
+
+  <!-- Empty State -->
+  <ng-container *ngIf="!isLoading && requests.length === 0">
+    <mat-card class="empty-state-card">
+      <div class="empty-state">
+        <mat-icon class="empty-icon">search_off</mat-icon>
+        <h3>No open requests found</h3>
+        <p>There are no blood requests matching your filter right now.</p>
+        <ng-container *ngIf="authService.isLoggedIn()">
+          <button mat-raised-button color="primary" routerLink="/requests/new">Create a Request</button>
+        </ng-container>
+      </div>
+    </mat-card>
+  </ng-container>
+
+  <!-- Request Cards Grid -->
+  <ng-container *ngIf="!isLoading && requests.length > 0">
+    <div class="cards-grid">
+      <mat-card class="request-card" *ngFor="let request of requests">
+
+        <!-- Card Top -->
+        <div class="card-top">
+          <span class="blood-badge">{{ getBloodGroupLabel(request.bloodGroup) }}</span>
+          <mat-chip [color]="getStatusColor(request.status || 'OPEN')" highlighted>{{ request.status }}</mat-chip>
+        </div>
+
+        <mat-card-header>
+          <mat-card-title>{{ request.patientName }}</mat-card-title>
+          <mat-card-subtitle>
+            <mat-icon class="small-icon">local_hospital</mat-icon>
+            {{ request.hospital }}
+          </mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="info-row">
+            <mat-icon class="small-icon">water_drop</mat-icon>
+            <span>{{ request.unitsNeeded }} unit(s) needed</span>
+          </div>
+          <div class="info-row">
+            <mat-icon class="small-icon">phone</mat-icon>
+            <span>{{ request.contact }}</span>
+          </div>
+          <ng-container *ngIf="request.reason">
+            <div class="info-row">
+              <mat-icon class="small-icon">info</mat-icon>
+              <span>{{ request.reason }}</span>
+            </div>
+          </ng-container>
+          <div class="info-row muted">
+            <mat-icon class="small-icon">schedule</mat-icon>
+            <span>{{ request.createdAt | date: 'dd MMM yyyy' }}</span>
+          </div>
+        </mat-card-content>
+
+        <!-- Actions -->
+        <ng-container *ngIf="canModify(request)">
+          <mat-card-actions>
+            <button mat-stroked-button color="primary" [routerLink]="['/requests/edit', request.id]">
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+            <button mat-stroked-button color="warn" (click)="deleteRequest(request.id!)">
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          </mat-card-actions>
+        </ng-container>
+
+      </mat-card>
+    </div>
+  </ng-container>
+
+</div>

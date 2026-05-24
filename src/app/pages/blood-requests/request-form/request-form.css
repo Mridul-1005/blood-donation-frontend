@@ -1,0 +1,126 @@
+.page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+  min-height: calc(100vh - 120px);
+}
+
+.form-card {
+  padding: var(--space-6) !important;
+  border-radius: var(--radius-xl) !important;
+}
+
+.form-header-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.form-header-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.form-header-icon mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: white;
+}
+
+.form-header-text h1 {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-gray-800);
+  letter-spacing: -0.02em;
+}
+
+.form-header-text p {
+  margin: 0;
+  color: var(--color-gray-500);
+  font-size: var(--font-size-sm);
+}
+
+.form-row {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.flex-field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.units-field {
+  width: 160px;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: var(--space-3);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.form-actions button {
+  border-radius: var(--radius-md) !important;
+}
+
+.form-actions button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin-right: var(--space-2);
+}
+
+.submit-content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-8);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .form-card {
+    padding: var(--space-4) !important;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .flex-field,
+  .units-field {
+    width: 100%;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}

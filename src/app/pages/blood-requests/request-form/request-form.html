@@ -1,0 +1,113 @@
+<!-- pages/blood-requests/request-form/request-form.component.html -->
+<div class="page-container">
+  <mat-card class="form-card">
+
+    <!-- Header -->
+    <div class="form-header-section">
+      <div class="form-header-icon">
+        <mat-icon>{{ isEditMode ? 'edit' : 'campaign' }}</mat-icon>
+      </div>
+      <div class="form-header-text">
+        <h1>{{ isEditMode ? 'Edit Blood Request' : 'New Blood Request' }}</h1>
+        <p>{{ isEditMode ? 'Update the request details below' : 'Fill in the details to post a blood request' }}</p>
+      </div>
+    </div>
+
+    <mat-card-content>
+
+      <!-- Loading while fetching edit data -->
+      <ng-container *ngIf="isLoading && isEditMode">
+        <div class="loading-center">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      </ng-container>
+
+      <form [formGroup]="requestForm" (ngSubmit)="onSubmit()">
+
+        <!-- Row 1: Patient Name & Blood Group -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="flex-field">
+            <mat-label>Patient Name</mat-label>
+            <input matInput formControlName="patientName" placeholder="Full name of patient">
+            <mat-icon matSuffix>person</mat-icon>
+            <mat-error *ngIf="patientName?.hasError('required') && patientName?.touched">Patient name is required</mat-error>
+            <mat-error *ngIf="patientName?.hasError('minlength') && patientName?.touched">Name must be at least 2 characters</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="flex-field">
+            <mat-label>Blood Group</mat-label>
+            <mat-select formControlName="bloodGroup">
+              <mat-option *ngFor="let bg of bloodGroups" [value]="bg.value">{{ bg.label }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="bloodGroup?.hasError('required') && bloodGroup?.touched">Blood group is required</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Row 2: Hospital & Units -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="flex-field">
+            <mat-label>Hospital</mat-label>
+            <input matInput formControlName="hospital" placeholder="Hospital name & location">
+            <mat-icon matSuffix>local_hospital</mat-icon>
+            <mat-error *ngIf="hospital?.hasError('required') && hospital?.touched">Hospital is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="units-field">
+            <mat-label>Units Needed</mat-label>
+            <input matInput type="number" formControlName="unitsNeeded" min="1" max="10">
+            <mat-icon matSuffix>water_drop</mat-icon>
+            <mat-error *ngIf="unitsNeeded?.hasError('required') && unitsNeeded?.touched">Units needed</mat-error>
+            <mat-error *ngIf="unitsNeeded?.hasError('min') && unitsNeeded?.touched">Minimum 1 unit</mat-error>
+            <mat-error *ngIf="unitsNeeded?.hasError('max') && unitsNeeded?.touched">Maximum 10 units</mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Contact -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Contact Number</mat-label>
+          <input matInput formControlName="contact" placeholder="01711234567">
+          <mat-icon matSuffix>phone</mat-icon>
+          <mat-error *ngIf="contact?.hasError('required') && contact?.touched">Contact number is required</mat-error>
+          <mat-error *ngIf="contact?.hasError('pattern') && contact?.touched">Enter a valid 11-digit number</mat-error>
+        </mat-form-field>
+
+        <!-- Reason -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Reason (Optional)</mat-label>
+          <textarea matInput formControlName="reason" placeholder="e.g. Surgery, accident, etc." rows="3"></textarea>
+        </mat-form-field>
+
+        <!-- Status (edit mode only) -->
+        <ng-container *ngIf="isEditMode">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+              <mat-option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+
+        <!-- Buttons -->
+        <div class="form-actions">
+          <button mat-stroked-button type="button" routerLink="/requests">
+            <mat-icon>arrow_back</mat-icon>
+            <span>Cancel</span>
+          </button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="requestForm.invalid || isLoading">
+            <ng-container *ngIf="isLoading && !isEditMode">
+              <mat-spinner diameter="20"></mat-spinner>
+            </ng-container>
+            <ng-container *ngIf="!isLoading">
+              <span class="submit-content">
+                <mat-icon>{{ isEditMode ? 'save' : 'send' }}</mat-icon>
+                <span>{{ isEditMode ? 'Save Changes' : 'Post Request' }}</span>
+              </span>
+            </ng-container>
+          </button>
+        </div>
+
+      </form>
+    </mat-card-content>
+
+  </mat-card>
+</div>

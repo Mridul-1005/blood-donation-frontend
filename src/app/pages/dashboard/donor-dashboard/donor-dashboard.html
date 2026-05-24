@@ -1,0 +1,141 @@
+<!-- pages/dashboard/donor-dashboard/donor-dashboard.component.html -->
+<div class="page-container">
+
+  <ng-container *ngIf="isLoading">
+    <div class="loading-center"><mat-spinner diameter="48"></mat-spinner></div>
+  </ng-container>
+
+  <ng-container *ngIf="!isLoading && profile">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <h1>Welcome back, {{ profile.name }}!</h1>
+        <p>Thank you for being a lifesaver. Here's your donor summary.</p>
+      </div>
+      <div class="avatar">{{ profile.name.charAt(0).toUpperCase() }}</div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <mat-card class="stat-card stat-primary">
+        <div class="stat-icon-wrapper"><mat-icon>water_drop</mat-icon></div>
+        <div class="stat-value">{{ myDonations.length }}</div>
+        <div class="stat-label">Total Donations</div>
+      </mat-card>
+      <mat-card class="stat-card stat-warning">
+        <div class="stat-icon-wrapper"><mat-icon>assignment</mat-icon></div>
+        <div class="stat-value">{{ myRequests.length }}</div>
+        <div class="stat-label">My Requests</div>
+      </mat-card>
+      <mat-card class="stat-card stat-info">
+        <div class="stat-icon-wrapper"><mat-icon>water_drop</mat-icon></div>
+        <div class="stat-value">{{ getBloodLabel(profile.bloodGroup) }}</div>
+        <div class="stat-label">Blood Group</div>
+      </mat-card>
+      <mat-card class="stat-card" [class.stat-success]="canDonateAgain()" [class.stat-warning]="!canDonateAgain()">
+        <div class="stat-icon-wrapper">
+          <mat-icon>{{ canDonateAgain() ? 'check_circle' : 'schedule' }}</mat-icon>
+        </div>
+        <div class="stat-value">{{ canDonateAgain() ? 'Ready' : getDaysUntilNextDonation() + 'd' }}</div>
+        <div class="stat-label">Donation Status</div>
+      </mat-card>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button mat-raised-button color="primary" routerLink="/donor/donations/new" [disabled]="!canDonateAgain()">
+        <mat-icon>favorite</mat-icon>
+        <span>{{ canDonateAgain() ? 'Log a Donation' : 'Cannot Donate Yet' }}</span>
+      </button>
+      <button mat-stroked-button color="primary" routerLink="/requests/new">
+        <mat-icon>campaign</mat-icon>
+        <span>Post Blood Request</span>
+      </button>
+      <button mat-stroked-button routerLink="/donor/donations">
+        <mat-icon>history</mat-icon>
+        <span>Donation History</span>
+      </button>
+    </div>
+
+    <!-- Info Banner -->
+    <ng-container *ngIf="!canDonateAgain()">
+      <div class="info-banner">
+        <mat-icon>info</mat-icon>
+        <span>You can donate again in <strong>{{ getDaysUntilNextDonation() }} days</strong>. Donors must wait 3 months between donations.</span>
+      </div>
+    </ng-container>
+
+    <!-- Bottom Grid -->
+    <div class="bottom-grid">
+      <mat-card class="section-card">
+        <div class="section-header">
+          <div class="section-title">
+            <mat-icon>history</mat-icon>
+            <h2>Recent Donations</h2>
+          </div>
+          <a mat-button color="primary" routerLink="/donor/donations" *ngIf="myDonations.length > 4">See All</a>
+        </div>
+        <mat-card-content>
+          <ng-container *ngIf="myDonations.length === 0">
+            <div class="empty-state">
+              <mat-icon>water_drop</mat-icon>
+              <p>No donations yet. Log your first donation!</p>
+              <button mat-raised-button color="primary" routerLink="/donor/donations/new" [disabled]="!canDonateAgain()">Log Donation</button>
+            </div>
+          </ng-container>
+          <ng-container *ngFor="let donation of myDonations.slice(0,4)">
+            <div class="list-item">
+              <div class="list-item-left">
+                <div class="list-icon blood-icon">
+                  <mat-icon>water_drop</mat-icon>
+                </div>
+                <div>
+                  <div class="item-title">{{ donation.unitsDonated }} unit(s) donated</div>
+                  <div class="item-sub">{{ donation.donatedAt | date: 'dd MMM yyyy' }}<ng-container *ngIf="donation.location"> · {{ donation.location }}</ng-container></div>
+                </div>
+              </div>
+            </div>
+            <mat-divider></mat-divider>
+          </ng-container>
+          <div class="see-all" *ngIf="myDonations.length > 4">
+            <a mat-button color="primary" routerLink="/donor/donations">View all {{ myDonations.length }} donations</a>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="section-card">
+        <div class="section-header">
+          <div class="section-title">
+            <mat-icon>campaign</mat-icon>
+            <h2>Open Requests Nearby</h2>
+          </div>
+          <a mat-button color="primary" routerLink="/requests">View All</a>
+        </div>
+        <mat-card-content>
+          <ng-container *ngIf="openRequests.length === 0">
+            <div class="empty-state">
+              <mat-icon>search_off</mat-icon>
+              <p>No open requests right now. That's great news!</p>
+            </div>
+          </ng-container>
+          <ng-container *ngFor="let req of openRequests">
+            <div class="list-item">
+              <div class="list-item-left">
+                <span class="blood-badge">{{ getBloodLabel(req.bloodGroup) }}</span>
+                <div>
+                  <div class="item-title">{{ req.patientName }}</div>
+                  <div class="item-sub">{{ req.hospital }} · {{ req.unitsNeeded }} unit(s)</div>
+                </div>
+              </div>
+              <span class="urgent-badge">URGENT</span>
+            </div>
+            <mat-divider></mat-divider>
+          </ng-container>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+  </ng-container>
+
+</div>

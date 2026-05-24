@@ -1,0 +1,250 @@
+<!-- pages/dashboard/admin-dashboard/admin-dashboard.component.html -->
+<div class="page-container">
+
+  <ng-container *ngIf="isLoading">
+    <div class="loading-center">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- Header Banner -->
+    <div class="admin-banner">
+      <div class="banner-content">
+        <h1>Admin Dashboard</h1>
+        <p>Manage users, blood requests, donations and inventory</p>
+      </div>
+      <div class="banner-icon">
+        <mat-icon>admin_panel_settings</mat-icon>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-grid">
+      <mat-card class="stat-card stat-primary">
+        <div class="stat-icon-wrapper">
+          <mat-icon>group</mat-icon>
+        </div>
+        <div class="stat-value">{{ allUsers.length }}</div>
+        <div class="stat-label">Total Users</div>
+      </mat-card>
+
+      <mat-card class="stat-card stat-warning">
+        <div class="stat-icon-wrapper">
+          <mat-icon>campaign</mat-icon>
+        </div>
+        <div class="stat-value">{{ getOpenRequestsCount() }}</div>
+        <div class="stat-label">Open Requests</div>
+      </mat-card>
+
+      <mat-card class="stat-card stat-info">
+        <div class="stat-icon-wrapper">
+          <mat-icon>water_drop</mat-icon>
+        </div>
+        <div class="stat-value">{{ allDonations.length }}</div>
+        <div class="stat-label">Total Donations</div>
+      </mat-card>
+
+      <mat-card class="stat-card stat-success">
+        <div class="stat-icon-wrapper">
+          <mat-icon>favorite</mat-icon>
+        </div>
+        <div class="stat-value">{{ getTotalDonatedUnits() }}</div>
+        <div class="stat-label">Units Donated</div>
+      </mat-card>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="action-row">
+      <button mat-raised-button color="primary" routerLink="/requests/new">
+        <mat-icon>add</mat-icon>
+        <span>New Request</span>
+      </button>
+      <button mat-stroked-button color="primary" routerLink="/inventory">
+        <mat-icon>inventory_2</mat-icon>
+        <span>Manage Inventory</span>
+      </button>
+      <button mat-stroked-button routerLink="/admin/donations">
+        <mat-icon>history</mat-icon>
+        <span>All Donations</span>
+      </button>
+    </div>
+
+    <!-- Blood Inventory Quick View -->
+    <mat-card class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <mat-icon>water_drop</mat-icon>
+          <h2>Blood Inventory</h2>
+        </div>
+        <a mat-button color="primary" routerLink="/inventory">Manage <mat-icon class="icon-sm">arrow_forward</mat-icon></a>
+      </div>
+      <mat-card-content>
+        <div class="inventory-grid">
+          <ng-container *ngFor="let inv of inventory">
+            <div class="inv-item" [class.low-stock]="inv.units < 5" [class.out-of-stock]="inv.units === 0">
+              <div class="inv-blood">{{ getBloodLabel(inv.bloodGroup) }}</div>
+              <div class="inv-units">{{ inv.units }}</div>
+              <div class="inv-label">units</div>
+              <ng-container *ngIf="inv.units < 5">
+                <span class="low-badge" [class.out-badge]="inv.units === 0">
+                  {{ inv.units === 0 ? 'OUT' : 'LOW' }}
+                </span>
+              </ng-container>
+            </div>
+          </ng-container>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Users Table -->
+    <mat-card class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <mat-icon>group</mat-icon>
+          <h2>All Users</h2>
+        </div>
+      </div>
+      <mat-card-content class="table-content">
+        <table mat-table [dataSource]="allUsers" class="data-table">
+
+          <!-- Name -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let u">
+              <div class="user-cell">
+                <div class="user-avatar">{{ u.name?.charAt(0) }}</div>
+                <div class="user-info">
+                  <div class="cell-title">{{ u.name }}</div>
+                  <div class="cell-sub">{{ u.phone }}</div>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Email -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let u">{{ u.email }}</td>
+          </ng-container>
+
+          <!-- Blood Group -->
+          <ng-container matColumnDef="bloodGroup">
+            <th mat-header-cell *matHeaderCellDef>Blood</th>
+            <td mat-cell *matCellDef="let u">
+              <span class="blood-chip">{{ getBloodLabel(u.bloodGroup) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Role -->
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>Role</th>
+            <td mat-cell *matCellDef="let u">
+              <mat-select
+                [value]="u.role"
+                (selectionChange)="updateRole(u.id, $event.value)"
+                class="role-select">
+                <mat-option *ngFor="let role of roles" [value]="role">
+                  <span [style.color]="getRoleColor(role)">{{ role }}</span>
+                </mat-option>
+              </mat-select>
+            </td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let u">
+              <button mat-icon-button class="delete-btn"
+                (click)="deleteUser(u.id)"
+                matTooltip="Delete user">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="userColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: userColumns;" class="table-row"></tr>
+
+        </table>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Blood Requests Table -->
+    <mat-card class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <mat-icon>campaign</mat-icon>
+          <h2>All Blood Requests</h2>
+        </div>
+        <a mat-button color="primary" routerLink="/requests">View Public <mat-icon class="icon-sm">arrow_forward</mat-icon></a>
+      </div>
+      <mat-card-content class="table-content">
+        <table mat-table [dataSource]="allRequests" class="data-table">
+
+          <!-- Patient -->
+          <ng-container matColumnDef="patientName">
+            <th mat-header-cell *matHeaderCellDef>Patient</th>
+            <td mat-cell *matCellDef="let r">{{ r.patientName }}</td>
+          </ng-container>
+
+          <!-- Blood Group -->
+          <ng-container matColumnDef="bloodGroup">
+            <th mat-header-cell *matHeaderCellDef>Blood</th>
+            <td mat-cell *matCellDef="let r">
+              <span class="blood-chip">{{ getBloodLabel(r.bloodGroup) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Hospital -->
+          <ng-container matColumnDef="hospital">
+            <th mat-header-cell *matHeaderCellDef>Hospital</th>
+            <td mat-cell *matCellDef="let r">{{ r.hospital }}</td>
+          </ng-container>
+
+          <!-- Status -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let r">
+              <span class="status-badge" [class]="'badge-' + getStatusClass(r.status)">
+                {{ r.status }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Created At -->
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let r">
+              {{ r.createdAt | date: 'dd MMM yyyy' }}
+            </td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let r">
+              <button mat-icon-button color="primary"
+                [routerLink]="['/requests/edit', r.id]"
+                matTooltip="Edit">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button class="delete-btn"
+                (click)="deleteRequest(r.id)"
+                matTooltip="Delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="requestColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: requestColumns;" class="table-row"></tr>
+
+        </table>
+      </mat-card-content>
+    </mat-card>
+
+  </ng-container>
+
+</div>
