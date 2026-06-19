@@ -77,6 +77,12 @@
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
 
+		<!-- ✅ ADDED: Email sending via Brevo SMTP -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
 		<!-- ✅ FIXED: Correct test dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -1,7 +1,7 @@
 // pages/blood-requests/request-list/request-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BloodRequestService } from '../../../core/services/blood-request';
 import { AuthService } from '../../../core/services/auth';
@@ -46,8 +46,10 @@ import { MatBadgeModule } from '@angular/material/badge';
 export class RequestListComponent implements OnInit {
 
   requests: BloodRequest[] = [];
+  private allRequests: BloodRequest[] = [];
   isLoading = false;
   selectedBloodGroup = '';
+  private viewMode: 'open' | 'my' = 'open';
 
   bloodGroups = [
     { value: 'A_POSITIVE',  label: 'A+' },
@@ -63,11 +65,22 @@ export class RequestListComponent implements OnInit {
   constructor(
     private bloodRequestService: BloodRequestService,
     public authService: AuthService,
+    private route: ActivatedRoute,
     private router: Router,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
+    this.viewMode = this.route.snapshot.routeConfig?.path === 'requests/my' ? 'my' : 'open';
+    this.loadCurrentRequests();
+  }
+
+  private loadCurrentRequests(): void {
+    if (this.viewMode === 'my') {
+      this.loadMyRequests();
+      return;
+    }
+
     this.loadOpenRequests();
   }
 
@@ -75,6 +88,7 @@ export class RequestListComponent implements OnInit {
     this.isLoading = true;
     this.bloodRequestService.getOpenRequests().subscribe({
       next: (res) => {
+        this.allRequests = res.data;
         this.requests = res.data;
         this.isLoading = false;
       },
@@ -85,12 +99,33 @@ export class RequestListComponent implements OnInit {
     });
   }
 
-  onFilterChange(): void {
+  loadMyRequests(): void {
     this.isLoading = true;
+    this.bloodRequestService.getMyRequests().subscribe({
+      next: (res) => {
+        this.allRequests = res.data;
+        this.requests = res.data;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.snackBar.open('Failed to load your requests', 'Close', { duration: 3000 });
+        this.isLoading = false;
+      }
+    });
+  }
+
+  onFilterChange(): void {
     if (!this.selectedBloodGroup) {
-      this.loadOpenRequests();
+      this.requests = [...this.allRequests];
       return;
     }
+
+    if (this.viewMode === 'my') {
+      this.requests = this.allRequests.filter(request => request.bloodGroup === this.selectedBloodGroup);
+      return;
+    }
+
+    this.isLoading = true;
     this.bloodRequestService.searchByBloodGroup(this.selectedBloodGroup).subscribe({
       next: (res) => {
         this.requests = res.data;
@@ -105,7 +140,7 @@ export class RequestListComponent implements OnInit {
 
   clearFilter(): void {
     this.selectedBloodGroup = '';
-    this.loadOpenRequests();
+    this.loadCurrentRequests();
   }
 
   deleteRequest(id: number): void {

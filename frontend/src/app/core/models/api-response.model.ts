@@ -16,6 +16,14 @@ export interface PaginatedResponse<T = any> {
   pageSize?: number;
 }
 
+export interface PageResponse<T = any> {
+  content: T[];
+  totalElements?: number;
+  totalPages?: number;
+  number?: number;
+  size?: number;
+}
+
 export interface ApiError {
   success: false;
   message: string;

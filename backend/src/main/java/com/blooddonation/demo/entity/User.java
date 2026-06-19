@@ -2,6 +2,8 @@ package com.blooddonation.demo.entity;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users", indexes = {
@@ -47,6 +49,9 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PasswordResetToken> passwordResetTokens = new ArrayList<>();
+
     // ── Getters & Setters ──────────────────────────
 
     public Long getId() { return id; }
@@ -81,4 +86,7 @@ public class User {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public List<PasswordResetToken> getPasswordResetTokens() { return passwordResetTokens; }
+    public void setPasswordResetTokens(List<PasswordResetToken> passwordResetTokens) { this.passwordResetTokens = passwordResetTokens; }
 }

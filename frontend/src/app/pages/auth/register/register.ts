@@ -65,8 +65,12 @@ export class RegisterComponent {
     this.registerForm = this.fb.group({
       name:       ['', [Validators.required, Validators.minLength(2)]],
       email:      ['', [Validators.required, Validators.email]],
-      password:   ['', [Validators.required, Validators.minLength(6)]],
-      phone:      ['', [Validators.required, Validators.pattern('^[0-9]{11}$')]],
+      password:   ['', [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$')
+      ]],
+      phone:      ['', [Validators.required, Validators.pattern('^01[3-9]\\d{8}$')]],
       bloodGroup: ['', Validators.required],
       address:    ['']
     });
@@ -85,7 +89,8 @@ export class RegisterComponent {
       },
       error: (err) => {
         this.isLoading = false;
-        const message = err.error?.message || 'Registration failed. Please try again.';
+        const fieldErrors = err.error?.data ? Object.values(err.error.data).join(' ') : '';
+        const message = fieldErrors || err.error?.message || 'Registration failed. Please try again.';
         this.snackBar.open(message, 'Close', { duration: 4000 });
       }
     });

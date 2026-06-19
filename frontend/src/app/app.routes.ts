@@ -10,7 +10,10 @@ export const routes: Routes = [
   // ── Public routes ─────────────────────────────
   { path: 'login',    loadComponent: () => import('./pages/auth/login/login').then(m => m.LoginComponent) },
   { path: 'register', loadComponent: () => import('./pages/auth/register/register').then(m => m.RegisterComponent) },
+  { path: 'forgot-password', loadComponent: () => import('./pages/auth/forgot-password/forgot-password').then(m => m.ForgotPasswordComponent) },
+  { path: 'reset-password', loadComponent: () => import('./pages/auth/reset-password/reset-password').then(m => m.ResetPasswordComponent) },
   { path: 'requests', loadComponent: () => import('./pages/blood-requests/request-list/request-list').then(m => m.RequestListComponent) },
+  { path: 'requests/my', loadComponent: () => import('./pages/blood-requests/request-list/request-list').then(m => m.RequestListComponent), canActivate: [authGuard] },
   { path: 'inventory', loadComponent: () => import('./pages/inventory/inventory').then(m => m.InventoryComponent) },
 
   // ── Logged-in user routes ─────────────────────

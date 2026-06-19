@@ -32,6 +32,15 @@ export interface RegisterRequest {
   address?: string;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
@@ -51,6 +60,19 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data).pipe(
       tap(res => this.saveSession(res))
     );
+  }
+
+  // ── Forgot Password ────────────────────────────
+  forgotPassword(email: string): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  // ── Reset Password ────────────────────────────
+  resetPassword(token: string, newPassword: string): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.apiUrl}/reset-password`, {
+      token,
+      newPassword
+    });
   }
 
   // ── Save token & user info to localStorage ────

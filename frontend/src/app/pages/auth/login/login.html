@@ -41,6 +41,11 @@
             <mat-error *ngIf="password?.hasError('required') && password?.touched">Password is required</mat-error>
           </mat-form-field>
 
+          <!-- Forgot Password Link -->
+          <div class="forgot-password-link">
+            <a routerLink="/forgot-password">Forgot Password?</a>
+          </div>
+
           <!-- Submit Button -->
           <button
             mat-raised-button

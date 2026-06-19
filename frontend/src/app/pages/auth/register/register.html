@@ -48,7 +48,8 @@
               <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
             <mat-error *ngIf="password?.hasError('required') && password?.touched">Password is required</mat-error>
-            <mat-error *ngIf="password?.hasError('minlength') && password?.touched">Password must be at least 6 characters</mat-error>
+            <mat-error *ngIf="password?.hasError('minlength') && password?.touched">Password must be at least 8 characters</mat-error>
+            <mat-error *ngIf="password?.hasError('pattern') && password?.touched">Password must contain uppercase, lowercase, and a number</mat-error>
           </mat-form-field>
 
           <!-- Phone -->

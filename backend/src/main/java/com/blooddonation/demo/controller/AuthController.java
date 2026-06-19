@@ -2,8 +2,10 @@ package com.blooddonation.demo.controller;
 
 import com.blooddonation.demo.dto.ApiResponse;
 import com.blooddonation.demo.dto.AuthResponse;
+import com.blooddonation.demo.dto.ForgotPasswordRequest;
 import com.blooddonation.demo.dto.LoginRequest;
 import com.blooddonation.demo.dto.RegisterRequest;
+import com.blooddonation.demo.dto.ResetPasswordRequest;
 import com.blooddonation.demo.service.AuthService;
 import com.blooddonation.demo.service.RateLimitService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -75,6 +77,37 @@ public class AuthController {
                         .body(new ApiResponse<>(false,
                                 "Invalid email or password. " + remainingAttempts + " attempts remaining."));
             }
+        }
+    }
+
+    // ── POST /api/auth/forgot-password ─────────────
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<Void>> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request) {
+        try {
+            authService.forgotPassword(request.getEmail());
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Password reset email sent! Check your inbox.", null)
+            );
+        } catch (Exception e) {
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "If an account exists with that email, a reset link has been sent.", null)
+            );
+        }
+    }
+
+    // ── POST /api/auth/reset-password ──────────────
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request) {
+        try {
+            authService.resetPassword(request.getToken(), request.getNewPassword());
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Password reset successful! You can now login.", null)
+            );
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse<>(false, e.getMessage(), null));
         }
     }
 
